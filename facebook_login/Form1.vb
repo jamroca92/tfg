@@ -70,91 +70,46 @@ Public Class Form1
     Private Sub listBox1_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles ListBox1.DoubleClick
 
 
-        Dim cad_completa As String()
-        Dim outer As String
-        Dim id As String
-        Dim tag As String
-        Dim Name As String
-        cad_completa = ListBox1.SelectedItem.ToString().Split("|")
+        Dim cad_completa As String
 
-        If cad_completa.Length = 2 Then
+        cad_completa = ListBox1.SelectedItem.ToString()
 
 
-            outer = cad_completa(0)
-            tag = cad_completa(1).Substring(5)
 
-            Dim doc As HtmlElementCollection = Browser.Document.All
+        Dim doc As HtmlElementCollection = Browser.Document.All
 
-            For Each elem As HtmlElement In doc
+        For Each elem As HtmlElement In doc
 
-                If outer = elem.OuterText And tag = elem.TagName Then
-                    elem.Focus()
+            If cad_completa = elem.Id Or cad_completa = elem.Name Then
+                elem.Focus()
 
 
-                    label_id_valor.Text = elem.Id
-                    If (String.IsNullOrEmpty(elem.Id)) Then
-                        label_id_valor.Text = "{Vacio}"
-                    End If
-                    label_name_valor.Text = elem.Name
-                    If (String.IsNullOrEmpty(elem.Name)) Then
-                        label_name_valor.Text = "{Vacio}"
-                    End If
-                    label_tag_valor.Text = elem.TagName
-                    If (String.IsNullOrEmpty(elem.TagName)) Then
-                        label_tag_valor.Text = "{Vacio}"
-                    End If
-                    label_value_valor.Text = elem.GetAttribute("value")
-                    If (String.IsNullOrEmpty(elem.GetAttribute("value"))) Then
-                        label_value_valor.Text = "{Vacio}"
-                    End If
-                    label_outer_valor.Text = elem.OuterText
-                    If (String.IsNullOrEmpty(elem.OuterText)) Then
-                        label_outer_valor.Text = "{Vacio}"
-                    End If
-
+                label_id_valor.Text = elem.Id
+                If (String.IsNullOrEmpty(elem.Id)) Then
+                    label_id_valor.Text = "{Vacio}"
                 End If
-            Next
-        End If
-
-        If cad_completa.Length = 3 Then
-
-
-            id = cad_completa(0).Substring(4)
-            tag = cad_completa(2).Substring(5)
-            Name = cad_completa(1).Substring(6)
-            Dim doc As HtmlElementCollection = Browser.Document.All
-
-            For Each elem As HtmlElement In doc
-
-                If id = elem.Id And Name = elem.Name And tag = elem.TagName Then
-
-
-                    elem.Focus()
-
-                    label_id_valor.Text = elem.Id
-                    If (String.IsNullOrEmpty(elem.Id)) Then
-                        label_id_valor.Text = "{Vacio}"
-                    End If
-                    label_name_valor.Text = elem.Name
-                    If (String.IsNullOrEmpty(elem.Name)) Then
-                        label_name_valor.Text = "{Vacio}"
-                    End If
-                    label_tag_valor.Text = elem.TagName
-                    If (String.IsNullOrEmpty(elem.TagName)) Then
-                        label_tag_valor.Text = "{Vacio}"
-                    End If
-                    label_value_valor.Text = elem.GetAttribute("value")
-                    If (String.IsNullOrEmpty(elem.GetAttribute("value"))) Then
-                        label_value_valor.Text = "{Vacio}"
-                    End If
-                    label_outer_valor.Text = elem.OuterText
-                    If (String.IsNullOrEmpty(elem.OuterText)) Then
-                        label_outer_valor.Text = "{Vacio}"
-                    End If
-
+                label_name_valor.Text = elem.Name
+                If (String.IsNullOrEmpty(elem.Name)) Then
+                    label_name_valor.Text = "{Vacio}"
                 End If
-            Next
-        End If
+                label_tag_valor.Text = elem.TagName
+                If (String.IsNullOrEmpty(elem.TagName)) Then
+                    label_tag_valor.Text = "{Vacio}"
+                End If
+                label_value_valor.Text = elem.GetAttribute("value")
+                If (String.IsNullOrEmpty(elem.GetAttribute("value"))) Then
+                    label_value_valor.Text = "{Vacio}"
+                End If
+                label_outer_valor.Text = elem.OuterText
+                If (String.IsNullOrEmpty(elem.OuterText)) Then
+                    label_outer_valor.Text = "{Vacio}"
+                End If
+
+            End If
+        Next
+
+
+
         Me.Controls.Add(label_id)
         Me.Controls.Add(label_id_valor)
         Me.Controls.Add(label_name)
@@ -179,20 +134,29 @@ Public Class Form1
 
         Dim doc As HtmlElementCollection
 
+
         doc = Browser.Document.All
-        MessageBox.Show(Browser.Document.All.Count)
+
         For Each elem As HtmlElement In doc
+            Dim ElemName As String
 
-            If String.IsNullOrEmpty(elem.Id) And String.IsNullOrEmpty(elem.Name) Then
-                ListBox1.Items.Add(elem.OuterText + "|" + "Tag: " + elem.TagName)
+            ElemName = elem.GetAttribute("ID")
 
-            Else
-                ListBox1.Items.Add("ID: " + elem.Id + "|" + "NAME: " + elem.Name + "|" + "Tag: " + elem.TagName)
+            If (ElemName Is Nothing Or ElemName.Length = 0) Then
+                ElemName = elem.GetAttribute("name")
+                If (ElemName Is Nothing Or ElemName.Length = 0) Then
+
+                    ElemName = "{Vacio}"
+
+                End If
+            End If
+            If (Not ElemName.Equals("{Vacio}")) Then
+                ListBox1.Items.Add(ElemName)
             End If
         Next
-        MessageBox.Show(ListBox1.Items.Count)
 
-        ListBox1.Sorted = True
+
+
         ListBox1.HorizontalScrollbar = True
 
     End Sub
