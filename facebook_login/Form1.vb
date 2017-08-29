@@ -1,5 +1,8 @@
 ﻿Imports System.Threading
 Imports System.Windows.Forms
+Imports VB = Microsoft.VisualBasic
+
+
 
 Public Class Form1
     Private pageready As Boolean = False
@@ -149,14 +152,19 @@ Public Class Form1
                     ElemName = "{Vacio}"
 
                 End If
+
+
             End If
             If (Not ElemName.Equals("{Vacio}")) Then
                 ListBox1.Items.Add(ElemName)
             End If
+
+
         Next
 
 
 
+        ListBox1.Sorted = True
         ListBox1.HorizontalScrollbar = True
 
     End Sub
@@ -184,79 +192,63 @@ Public Class Form1
             While (sr.EndOfStream = False)
                 cadena = sr.ReadLine
                 Separadores = cadena.Split("|")
-                ejecutar(Separadores)
 
+                ejecutar(Separadores)
 
             End While
             sr.Close()
         End If
 
     End Sub
-
+    Public Sub wait(ByVal seconds As Single)
+        Static start As Single
+        start = VB.Timer()
+        Do While VB.Timer() < start + seconds
+            System.Windows.Forms.Application.DoEvents()
+        Loop
+    End Sub
     Private Sub ejecutar(separadores() As String)
 
         Dim Indice As String
         Dim id As String
-        Dim tag As String
-        Dim Name As String
         Dim valor As String
+
         Indice = separadores(0)
 
-
+        ' MessageBox.Show("Esperando")
         If (Indice = "M") Then
-            MessageBox.Show("Esperando")
-            id = separadores(1).Substring(4)
-            tag = separadores(3).Substring(5)
-            Name = separadores(2).Substring(6)
-            valor = separadores(4)
+            wait(7)
+            id = separadores(1)
+            valor = separadores(2)
             Dim doc As HtmlElementCollection = Browser.Document.All
 
+            For Each item As HtmlElement In doc
+                If id = item.Id Or id = item.Name Then
 
-            For Each elem As HtmlElement In doc
-
-                If id = elem.Id And Name = elem.Name And tag = elem.TagName Then
-
-                    If Browser.ReadyState = WebBrowserReadyState.Complete Then
-                        elem.SetAttribute("value", valor)
-                    End If
-
-
+                    item.SetAttribute("value", valor)
                 End If
             Next
 
 
+
+
+
+
         ElseIf (Indice = "P") Then
-            If separadores.Length > 3 Then
-                id = separadores(1).Substring(4)
-                tag = separadores(3).Substring(5)
-                Name = separadores(2).Substring(6)
 
-                Dim doc As HtmlElementCollection = Browser.Document.All
+            id = separadores(1)
 
-                For Each elem As HtmlElement In doc
+            Dim doc As HtmlElementCollection = Browser.Document.All
+            For Each item As HtmlElement In doc
 
-                    If id = elem.Id And Name = elem.Name And tag = elem.TagName Then
-                        If Browser.ReadyState = WebBrowserReadyState.Complete Then
-                            elem.InvokeMember("click")
-                        End If
+                If id = item.Id Or id = item.Name Then
 
-                    End If
 
-                Next
+                    item.InvokeMember("click")
+                End If
+            Next
 
-            ElseIf separadores.Length = 3 Then
-                valor = separadores(1)
 
-                Dim doc As HtmlElementCollection = Browser.Document.All
-
-                For Each elem As HtmlElement In doc
-                    If (elem.OuterText = valor) Then
-                        If Browser.ReadyState = WebBrowserReadyState.Complete Then
-                            elem.InvokeMember("click")
-                        End If
-                    End If
-                Next
-            End If
         End If
 
 
